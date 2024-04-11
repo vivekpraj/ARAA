@@ -1,0 +1,377 @@
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Road Safety App</title>
+
+<style>
+  /* General styles */
+body {
+   
+    margin: 0;
+    padding: 0;
+    background-image:linear-gradient(to bottom right, purple , rgb(245, 245, 241));
+    font-family: "Montserrat";
+  }
+  
+  /* Responsive styles */
+  @media only screen and (min-width: 600px) {
+    /* Increase font size for larger screens */
+    h1 {
+      font-size: 32px;
+    }
+  
+    /* Adjust map height for larger screens */
+    #map {
+        width: 100%;
+        height: 300px;
+      }
+  }
+  /* Title Image */
+.title-image{
+  width: 80%;
+  transform: rotate(0deg);
+  text-align: center;
+}
+
+  /* Navigaton Bar */
+
+.navbar-brand{
+  font-family: "ubuntu";
+  font-size: 4.5rem;
+  font-weight: bold;
+ 
+}
+
+.download-button{
+  margin: 5% 3% 6% 0;
+}
+
+.download-button:hover{
+  background-color: darkviolet;
+  color: white;
+}
+
+
+.icon{
+  color: #ef8172;
+  margin-bottom: 1rem;
+}
+
+.icon:hover{
+  color: #ff4c68;
+} 
+
+.container-fluid{
+  padding: 3% 15%;
+}
+
+.nav-item{
+  padding: 0 18px;
+}
+
+.nav-link{
+  font-size: 4.2rem;
+  font-family: "Montserrat";
+  font-weight: lighter;
+}
+
+#testimonials{
+    padding: 7% 15%;
+    text-align: center;
+    background-color: hsl(0, 90%, 88%);
+    color: #ff4c68;
+    padding-top: 40px;
+  }
+.testimonial-image{
+    width: 10%;
+    border-radius: 50% ;
+    
+    margin: 20px;
+}
+
+/* Feature Section */
+
+#features{
+    padding: 7% 15%;
+}
+
+.feature-box{
+    text-align: center;
+    padding: 5%;
+}
+
+h2{
+    font-family:"montserrat";
+    line-height: 1.5;
+    font-size: 3rem;
+    font-weight: 900;
+}
+</style>
+
+
+ <!-- CSS Stylessheet -->
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+<!-- Bootstrap CSS -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="styles.css">
+
+  <!-- Font Awesome -->
+  <script src="https://kit.fontawesome.com/c5fa78d89c.js" crossorigin="anonymous"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;400;900&family=Ubuntu:wght@300&display=swap"
+    rel="stylesheet">
+
+<!-- <script defer src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script> -->
+<!-- <script defer src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybB5IXNxFwWQfE7u8Lj+XJHAxKlXiG/8rsrtpb6PEdzD828Ii" crossorigin="anonymous"></script> -->
+<!-- <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-5dz1TEQ5gQZvKrtjIy5YydGaeA5gTqmFQA7YhjGs4WdYRlGrXS6Jx2vIK7n3hX3" crossorigin="anonymous"></script> -->
+<script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+  <script>
+    // Function to initialize Google Maps
+function initializeMap() {
+  const mapOptions = {
+    center: { lat: 40.7128, lng: -74.006 }, // Default to New York
+    zoom: 12
+  }
+
+  // Create a new map instance
+  const map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+  // Enable traffic layer
+  const trafficLayer = new google.maps.TrafficLayer();
+  trafficLayer.setMap(map);
+
+  // Initialize DirectionsService and DirectionsRenderer
+  const directionsService = new google.maps.DirectionsService();
+  const directionsRenderer = new google.maps.DirectionsRenderer();
+  directionsRenderer.setMap(map);
+
+  return { map, directionsService, directionsRenderer }; // Return map and directions objects
+}
+
+// Function to handle Google Maps API loading errors
+function handleMapError() {
+  // Display an error message or take appropriate action
+  console.error('Error loading Google Maps API.');
+  alert('Error loading Google Maps. Please try again later.');
+}
+
+// Function to open the map and initialize directions
+function openMap() {
+  const mapContainer = document.getElementById('mapContainer');
+  mapContainer.style.display = 'block'; // Show map container
+
+  // Initialize the map and directions if not already initialized
+  if (!window.mapData) {
+    window.mapData = initializeMap(); // Initialize the map and directions objects
+  }
+}
+
+// Function to calculate and display directions based on user input
+function calculateAndDisplayRoute(directionsService, directionsRenderer) {
+  const start = document.getElementById('startInput').value.trim();
+  const end = document.getElementById('endInput').value.trim();
+  
+  if (!start || !end) {
+    alert('Please enter both starting and ending addresses.');
+    return;
+  }
+
+  const request = {
+    origin: start,
+    destination: end,
+    travelMode: 'DRIVING' // Can be 'DRIVING', 'WALKING', 'BICYCLING', or 'TRANSIT'
+  };
+
+  // Call DirectionsService to get route
+  directionsService.route(request, (result, status) => {
+    if (status === 'OK') {
+      directionsRenderer.setDirections(result); // Display the route on the map
+    } else {
+      console.error('Error fetching directions:', status);
+      alert('Error fetching directions. Please try again.');
+    }
+  });
+}
+
+// Event listener for the button to open the map and calculate directions
+document.getElementById('openMapBtn').addEventListener('click', () => {
+  openMap(); // Open the map
+  if (window.mapData) {
+    const { directionsService, directionsRenderer } = window.mapData;
+    calculateAndDisplayRoute(directionsService, directionsRenderer); // Calculate and display directions
+  }
+});
+
+// Load Google Maps API asynchronously
+function loadGoogleMapsAPI() {
+  const script = document.createElement('script');
+  script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyCg3cbRmixir5PXaxq77qGgYuIIWqXICE8&callback=initMap`;
+  script.async = true;
+  script.defer = true;
+  script.onerror = handleMapError; // Handle script loading errors
+  document.head.appendChild(script);
+}
+
+// Call loadGoogleMapsAPI to start loading the Maps API
+loadGoogleMapsAPI();
+
+//function for News Display
+
+function fetchNews() {
+  const apiKey = '5306016eec974e1bb87e4f599916240e';
+  const apiUrl = `https://newsapi.org/v2/everything?q=road%20accident&sortBy=publishedAt&apiKey=${apiKey}`;
+
+  fetch(apiUrl)
+      .then(response => response.json())
+      .then(data => {
+          console.log('API response:', data); // Log API response for debugging
+          if (data.articles && data.articles.length > 0) {
+              console.log('Articles:', data.articles); // Log articles for debugging
+          } else {
+              console.error('No articles found.');
+          }
+      })
+      .catch(error => {
+          console.error('Error fetching news:', error);
+      });
+}
+
+// Call fetchNews when the page loads
+window.addEventListener('load', fetchNews);
+
+function displayNews(articles) {
+  articles.forEach(article => {
+      console.log(article.title); // Log each article's title
+  });
+}
+
+
+  </script>
+  <section id="title">
+
+    <div class="container-fluid">
+ <!-- Nav Bar -->
+ <nav class="navbar navbar-expand-lg navbar-dark">
+  <a class="navbar-brand" href="">ARAA</a>
+
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo2"
+    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarTogglerDemo2">
+
+    <ul class="navbar-nav ms-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="C:\Users\Vivek\Desktop\PBLPROJECCT\index.html">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="C:\Users\Vivek\Desktop\PBLPROJECCT\navigation.html">Navigation</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="">About</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+      <!-- Title -->
+      <div class="row">
+        <div class="col-lg-6">
+          <h1>Together, we pave the way to safer roads..</h1>
+          <button type="button" class="btn btn-dark btn-lg download-button"><i class="fa-brands fa-apple"></i>
+            Download</button>
+          <button type="button" class="btn btn-outline-light btn-lg download-button"><i
+              class="fa-brands fa-google-play"></i> Download</button>
+        </div>
+
+      <div class="col-lg-6">
+        <div class="tenor-gif-embed" data-postid="17309944" data-share-method="host" data-aspect-ratio="1.33333" data-width="100%"><a href="https://tenor.com/view/car-pixel-aesthetic-driving-vibes-gif-17309944">Car Pixel GIF</a>from <a href="https://tenor.com/search/car-gifs">Car GIFs</a></div>
+      </div>
+    </div>
+  </section>
+
+ <!-- Features -->
+
+ <section id="features">
+
+  <div class="row">
+    <div class="feature-box col-lg-4">
+      <i class="icon fa-solid fa-circle-check fa-4x"></i>
+      <h3>Accident Updates</h3>
+      <p>Get live Accident updates </p>
+    </div>
+
+    <div class="feature-box col-lg-4 ">
+      <i class="icon fa-solid fa-bullseye fa-4x"></i>
+      <h3>GPS navigation</h3>
+      <p>Use live GPS Navigation to travel </p>
+    </div>
+
+    <div class="feature-box col-lg-4 ">
+      <i class="icon fa-solid fa-heart fa-4x"></i>
+      <h3>Obstacle Detection</h3>
+      <p>Helps in live Obstacle detection using Advancedsensors</p>
+    </div>
+
+  </div>
+
+</section>
+
+  <!-- Testimonials -->
+
+  <section id="testimonials">
+
+    <div id="carouselExample" class="carousel slide" data-bs-ride="true" data-bs-interval="1000">
+      <div class="carousel-inner">
+        <div class="carousel-item active" style="background-color:rgb(247, 200, 248)">
+          <h2>"Thanks to ARAA, I've become a more cautious driver, making every trip safer."
+          </h2>
+          <img class="testimonial-image class=" press-logo src="images/dog-img.jpg" alt="dog-profile">
+          <em>Pebbles, New York</em>
+        </div>
+        <div class="carousel-item" style="background-color:rgb(252, 241, 96)">
+          <h2 class="testimonial-text">"I appreciate ARAA's dedication to promoting road safety awareness. Informative and impactful!"
+          </h2>
+          <img class="testimonial-image" src="images/lady-img.jpg" alt="lady-profile">
+          <em>Beverly, Illinois</em>
+        </div>
+        <div class="carousel-item" style="background-color:rgb(210, 120, 233)">
+          <h2 class="testimonial-text">"ARAA's innovative approach to road safety education is making a real difference in our community."</h2>
+          <img class="testimonial-image" src="images/lady-img.jpg" alt="lady-profile">
+          <em>Beverly, Illinois</em>
+        </div>
+      </div>
+
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+  </section>
+  
+  <footer id="footer">
+
+    <p>© Copyright ARAA</p>
+
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+    crossorigin="anonymous"></script>
+</body>
+</html>

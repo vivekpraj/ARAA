@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARAA</title>   
+
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css' rel='stylesheet' />
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.0/mapbox-gl-directions.js"></script>
+<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.0/mapbox-gl-directions.css" type="text/css">
+    <style>
+        body{
+            margin: 0;
+        }
+        #map{
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+    <!-- <script src="script.js" defer></script> -->
+</head>
+<body>
+    <div id='map' >
+       
+    </div>
+
+<script>
+  mapboxgl.accessToken ='pk.eyJ1Ijoidml2ZWsyMTIwMDMiLCJhIjoiY2x1dXgxeWJ2MGNqOTJtcTd5MmgwdjBneSJ9.LFbcX0hNOZtFq4-JYaLWRg'; //GENERATE YOUR OWN ACCESS TOKEN BY CREATING A MAPBOX ACCOUNT. Follow the tutorial for help.
+
+  navigator.geolocation.getCurrentPosition( successLocation, errorLocation, {
+    enableHighAccuracy: true
+})
+
+function successLocation(position){
+    setUpMap([position.coords.longitude, position.coords.latitude])
+}
+
+function errorLocation(){
+    setUpMap([72.88124,19.07764])
+}
+
+function setUpMap(center){
+    var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v11',
+    center: center,
+    zoom: 15
+    });
+
+    map.addControl(new mapboxgl.NavigationControl());
+
+    map.addControl(
+        new MapboxDirections({
+        accessToken: mapboxgl.accessToken
+        }),
+        'top-left'
+        );
+}
+
+</script>
+</body>
+</html>
